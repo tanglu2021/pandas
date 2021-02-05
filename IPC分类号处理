@@ -33,3 +33,31 @@ data = pd.DataFrame(list)
 print(data)
 with ExcelWriter('知识网络（发明+实用新型）.xlsx',mode='a') as writer:
     data.to_excel(writer,sheet_name='Sheet2')
+
+#按年份生成文件
+import pandas as pd
+import numpy as np
+from pandas import ExcelWriter
+import dataframe
+import os
+file="知识网络（发明+实用新型）.xlsx"
+#提取前三位数
+excel=pd.read_excel('知识网络（发明+实用新型）.xlsx',header=[0],sheet_name='大类',index_col='申请日')
+# 新建文件夹:
+def mkdir(path):
+    folder = os.path.exists(path)
+    if not folder:
+        os.makedirs(path)
+        print("创建成功：", path)
+    else:
+        print("目录已存在：", path)
+file_folder = 'C://Users/hp/Desktop/知识网络/'
+mkdir(file_folder)
+n = 2005
+if n <= 2016:
+    data = excel.loc[n]
+    file_name=str(n)
+    with ExcelWriter(file_folder + file_name + '.xls') as writer:
+        data.to_excel(writer)
+    n += 1
+print("提取结束")
