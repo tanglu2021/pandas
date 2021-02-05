@@ -1,0 +1,35 @@
+import pandas as pd
+import numpy as np
+from pandas import ExcelWriter
+import dataframe
+file="知识网络（发明+实用新型）.xlsx"
+#提取前三位数
+excel=pd.read_excel('知识网络（发明+实用新型）.xlsx',sheet_name = 'Sheet1',header = [0],usecols= [1])
+df=pd.DataFrame(excel)
+data=df['IPC'].str.split(';', expand=True)
+for i in data.columns:
+    for j in range(len(data)):
+        if data.iloc[j, i] is not None:
+            a = data.iloc[j, i]
+            data.iloc[j, i] = a[:3]
+            j += 1
+    i += 1
+print(data)
+#删除重复值并整理成需要的数据类型
+list = []
+k = 0
+for k in range(len(data)):
+    t = data.iloc[k].drop_duplicates().values.tolist()#删除重复值,列表类型
+    s = ''
+    for l in t:
+        if l is not None:
+            s += str(l) + ";"
+    s = s[:-1]
+    list.append(s)
+    k += 1
+print(list)
+#数据写入
+data = pd.DataFrame(list)
+print(data)
+with ExcelWriter('知识网络（发明+实用新型）.xlsx',mode='a') as writer:
+    data.to_excel(writer,sheet_name='Sheet2')
