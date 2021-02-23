@@ -1,0 +1,93 @@
+# pandas
+import pandas as pd
+import numpy as np
+from pandas import ExcelWriter
+#读取文件
+file="知识网络.xlsx"
+#按照分号隔开并提取前三位数
+excel=pd.read_excel(file,sheet_name = 'Sheet1',header = [0],usecols= [1])
+df=pd.DataFrame(excel)
+data=df['IPC'].str.split(';', expand=True)
+for i in data.columns:
+    for j in range(len(data)):
+        if data.iloc[j, i] is not None:
+            a = data.iloc[j, i]
+            data.iloc[j, i] = a[:3]
+            j += 1
+    i += 1
+
+#删除重复值并生成列表类型
+r_list = []
+k = 0
+for k in range(len(data)):
+    t = data.iloc[k].drop_duplicates().values.tolist()
+    s = ''
+    for l in t:
+        if l is not None:
+            s += str(l) + ";"
+    s = s[:-1]
+    r_list.append(s)
+    k += 1
+print("去重后：",r_list)
+
+#获得行列值
+def get_nodes(origin_list):
+    aim_list = []
+    for ipcs in origin_list:
+        ipc = ipcs.split(';')
+        for i in ipc:
+            if i not in aim_list:
+                aim_list.append(i)
+    return aim_list
+
+#数据格式化
+def format_data(origin_list):
+    formated_data=[]
+    for each in origin_list:
+        each_line=each.split(';')
+        formated_data.append(each_line)
+    return formated_data
+
+#建立矩阵
+def build_matrix(set_key_list):
+    edge=len(set_key_list)+1
+    matrix=[[''for j in range(edge)]for i in range(edge)]
+    return matrix
+
+#初始化矩阵
+def init_matrix(aim_list,matrix):
+    matrix[0][1:] = np.array(aim_list)
+    matrix=list(map(list,zip(*matrix)))
+    matrix[0][1:]=np.array(aim_list)
+    return matrix
+
+#计算共线次数
+def count_matrix(matrix,formated_list):
+    for row in range(1,len(matrix)):
+        for col in range(1,len(matrix)):
+            if matrix[0][row] == matrix[col][0]:
+                matrix[col][row]=str(0)
+            else:
+                counter=0
+                for each in formated_list:
+                    if matrix[0][row] in each and matrix[col][0] in each:
+                        counter += 1
+                    else:
+                        continue
+                matrix[col][row] = str(counter)
+    return matrix
+
+def main():
+    output_path=r'知识网络2.xlsx'
+    ipc_list = get_nodes(r_list)
+    formated_list=format_data(r_list)
+    matrix = build_matrix(ipc_list)
+    matrix = init_matrix(ipc_list, matrix)
+    count_matrix(matrix, formated_list)
+    data = pd.DataFrame(matrix)
+    with ExcelWriter(output_path, mode='a') as writer:
+        data.to_excel(writer)
+    print(matrix[0][0])
+
+if __name__=='__main__':
+    main()
