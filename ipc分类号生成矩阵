@@ -104,7 +104,7 @@ while i <= 2016:
     output_path=file_folder + file_name + '.xlsx'
     excel_write=pd.DataFrame(finall_matrix)
     with ExcelWriter(file_folder + file_name + '.xlsx') as writer:
-        excel_write.to_excel(writer)
+        excel_write.to_excel(writer,index=False,header=False)
     print('矩阵生成：')
     i += 1
 print('循环结束')
