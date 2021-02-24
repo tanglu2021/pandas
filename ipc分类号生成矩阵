@@ -13,7 +13,7 @@ print(df)
 i=2005
 while i <= 2016:
     data1=df.loc[i]
-    print(data1)
+    print('ipc:',data1)
     #得到ipc前三位
     data = data1['IPC'].str.split(';', expand=True)
     for n in data.columns:
@@ -23,7 +23,7 @@ while i <= 2016:
                 data.iloc[j, n] = a[:3]
                 j += 1
         n += 1
-    print(data)
+    print('ipc前三位：',data)
     #删除重复值并生成列表类型
     r_list = []
     k = 0
@@ -42,9 +42,9 @@ while i <= 2016:
         aim_list = []
         for ipcs in origin_list:
             ipc = ipcs.split(';')
-            for p in ipc:
-                if p not in aim_list:
-                    aim_list.append(i)
+            for ip in ipc:
+                if ip not in aim_list:
+                    aim_list.append(ip)
         return aim_list
     ipc_list = get_nodes(r_list)
     print('行列值：',ipc_list)
