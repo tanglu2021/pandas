@@ -1,0 +1,109 @@
+# pandas
+import pandas as pd
+import numpy as np
+from pandas import ExcelWriter
+from pandas import DataFrame
+import dataframe
+#读取文件
+file="知识网络.xlsx"
+#生成总矩阵列表
+excel=pd.read_excel('知识网络.xlsx',header=[0],sheet_name='Sheet1',index_col='申请日')
+df=pd.DataFrame(excel)
+origin_matrix_ipc=df['IPC'].str.split(';', expand=True)
+print('原始矩阵',origin_matrix_ipc)
+#舍弃前三位
+ipc_list_excel=[]
+ipc_list=''
+for i in origin_matrix_ipc.columns:
+    for j in range(len(origin_matrix_ipc)):
+        if origin_matrix_ipc.iloc[j, i] is not None:
+            a = origin_matrix_ipc.iloc[j, i]
+            origin_matrix_ipc.iloc[j, i] = a[:3]
+            b=origin_matrix_ipc.iloc[j, i]
+            element=b+','
+            if element not in ipc_list:
+                ipc_list += element
+                ipc_list_excel.append(b)
+            j += 1
+    i += 1
+ipc_list=ipc_list[:-1]
+print('去掉前三位矩阵：',origin_matrix_ipc)
+print('ipc文本格式',ipc_list)
+print('ipc列表格式',ipc_list_excel)
+print('变量数量：',len(ipc_list_excel))
+#建立矩阵
+def build_matrix(list_new):
+    edge = len(list_new) + 1
+    matrix = [['' for j in range(edge)] for i in range(edge)]
+    return matrix
+build_matrix = build_matrix(ipc_list_excel)
+print('建立矩阵：', build_matrix)
+#初始化矩阵
+def init_matrix(aim_list, matrix):
+    matrix[0][1:] = np.array(aim_list)
+    matrix = list(map(list, zip(*matrix)))
+    matrix[0][1:] = np.array(aim_list)
+    return matrix
+init_matrix = init_matrix(ipc_list_excel, build_matrix)
+print('初始化矩阵：', init_matrix)
+#按年份生成矩阵
+year=2005
+while year <= 2016:
+    # 得到ipc前三位
+    data1 = df.loc[year]
+    data = data1['IPC'].str.split(';', expand=True)
+    for n in data.columns:
+        for j in range(len(data)):
+            if data.iloc[j, n] is not None:
+                a = data.iloc[j, n]
+                data.iloc[j, n] = a[:3]
+                j += 1
+        n += 1
+    # 删除重复值并生成列表类型
+    r_list = []
+    k = 0
+    for k in range(len(data)):
+        t = data.iloc[k].drop_duplicates().values.tolist()
+        s = ''
+        for l in t:
+            if l is not None:
+                s += str(l) + ";"
+        s = s[:-1]
+        r_list.append(s)
+        k += 1
+    # 数据格式化
+    def format_data(origin_list):
+        formated_data = []
+        for each in origin_list:
+            each_line = each.split(';')
+            formated_data.append(each_line)
+        return formated_data
+    formated_list = format_data(r_list)
+    print('二维化：', formated_list)
+    # 计算共线次数
+    def count_matrix(matrix, formated_list):
+        for row in range(1, len(matrix)):
+            for col in range(1, len(matrix)):
+                if matrix[0][row] == matrix[col][0]:
+                    matrix[col][row] = str(0)
+                else:
+                    counter = 0
+                    for each in formated_list:
+                        if matrix[0][row] in each and matrix[col][0] in each:
+                            counter += 1
+                        else:
+                            continue
+                    matrix[col][row] = str(counter)
+        return matrix
+    finall_matrix = count_matrix(init_matrix, formated_list)
+    print('矩阵结果：', finall_matrix)
+    # 写入text
+    matrix = pd.DataFrame(finall_matrix).drop(index=0, columns=0)
+    print(matrix)
+    matrix.to_csv('知识网络.txt', sep=' ', index=False, header=False, mode='a')
+    with open('知识网络.txt',mode='a') as f:
+        f.write('\n')
+    print("year:", year)
+    print('矩阵生成：')
+    year += 1
+print('循环结束')
