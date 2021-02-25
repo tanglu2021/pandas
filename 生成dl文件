@@ -107,3 +107,20 @@ while year <= 2016:
     print('矩阵生成：')
     year += 1
 print('循环结束')
+
+with open('知识网络可视化.txt',mode='a') as f:
+    f.write('DL\n\n')
+    f.write('          n=58       //58行58列\n\n')
+    f.write('          nm=12      //矩阵个数\n\n')
+    f.write('labels:\n\n')
+    with open('ipc列表.txt','r') as p:
+        ipc_list=p.read()
+        print(ipc_list)
+    f.write('          '+ipc_list+'  //每个点的标签\n\n')
+    f.write('Matrix labels:\n\n')
+    f.write('               2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016  //每个点的标签\n\n')
+    f.write('data:\n\n')
+    with open('知识网络2.txt','r') as p:
+        matrix=p.read()
+        f.write(matrix)
+    f.close()
