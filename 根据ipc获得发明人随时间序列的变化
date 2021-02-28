@@ -1,0 +1,41 @@
+# pandas
+import pandas as pd
+import numpy as np
+from pandas import ExcelWriter
+from pandas import DataFrame
+import dataframe
+import os
+file_txt='ipc列表.txt'
+with open(file_txt,mode='r') as f:
+    ipc_list=f.read().split(',')
+ipc_list_all_car=[]
+for each in ipc_list:
+    if each[0] in ['B','A','E']:
+        print(each,end='')
+        ipc_list_all_car.append(each)
+print('汽车整车ipc：',ipc_list_all_car)
+#读取文件
+file="发明人+ipc.xlsx"
+excel=pd.read_excel(file,header=[0],sheet_name='Sheet1')
+df=pd.DataFrame(excel)
+df1=df['ipc']
+count=0
+for i in range(len(df1)):
+    line=df1[i].split(';')
+    print(line)
+    list = []
+    for j in line:
+        list.append(j[:3])
+    p = set(list) & set(ipc_list_all_car)
+    print(line,p)
+    if len(p) == 0:
+        print('不存在：',list)
+        df.drop(labels=[i],axis=0,inplace=True)
+        count += 1
+    i += 1
+print(df)
+print(count)
+output='发明人-知识网络.xlsx'
+with ExcelWriter(output,mode='a') as writer:
+    df.to_excel(writer,index=False)
+
