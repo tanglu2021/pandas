@@ -109,7 +109,7 @@ print('循环结束')
 
 with open('知识网络可视化.txt',mode='a') as f:
     f.write('DL\n\n')
-    f.write('          n=58       //58行58列\n\n')
+    f.write('          '+'n='+str(len(ipc_list_excel))+'       //'+str(len(ipc_list_excel))+'行'+str(len(ipc_list_excel))+'列\n\n')
     f.write('          nm=12      //矩阵个数\n\n')
     f.write('labels:\n\n')
     with open('ipc列表.txt','r') as p:
