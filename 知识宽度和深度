@@ -1,0 +1,26 @@
+# pandas
+import pandas
+from pandas import DataFrame
+#读取文件
+file='G01.xlsx'
+df=pandas.read_excel(file,header=[0],index_col='申请日')
+#对专利分年处理
+i=2005
+while i <= 2016:
+    data=df.loc[i]
+    sum=len(data)#获取专利总数
+    data1=data['IPC']
+    b_sum=0#构造分子，专利宽度或深度
+    #对每一行，即每一个专利
+    for j in range(sum):
+        line=str(data1.iloc[j]).split(';')#得到每一行的列表
+        line_sum = []#每一行求总数
+        line_number = 0
+        for each in line[1:]:
+            line_sum.append(each[:3])
+            line_number += line_sum.count('G01')
+        b_sum += line_number#求分子，即专利宽度或深度
+    print(i,'专利总数-分母:',sum,' 专利累计领域数-分子',b_sum)
+    weidth=b_sum/sum
+    print(i, weidth)
+    i += 1
