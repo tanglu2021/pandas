@@ -72,6 +72,13 @@ while year <= 2016:
         s = s[:-1]
         r_list.append(s)
         k += 1
+    #遍历每一行（发明人）
+   # for k in range(len(data)):
+      #  t = str(data.iloc[k]).split(';')
+       # t1=list(filter(None,t))
+       # print(t1)
+      #  formated_list.append(t1)
+       # k += 1
     # 数据格式化
     def format_data(origin_list):
         formated_data = []
